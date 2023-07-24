@@ -124,9 +124,9 @@
               <select name="repair_state">
                 {% if i.repair_state == 'B' %}
                   <option value="{{i.repair_state}}" selected>수리 전</option>
-                  <option value="B">수리 후</option>
+                  <option value="A">수리 후</option>
                 {% else %}
-                  <option value="A">수리 전</option>
+                  <option value="B">수리 전</option>
                   <option value="{{i.repair_state}}" selected>수리 후</option>
                 {% endif %}
               </select>
