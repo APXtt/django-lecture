@@ -1,12 +1,148 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} {% load static %} {% block head %}
+<title>index</title>
+<link rel="stylesheet" href="{% static 'space1/index.css' %}" />
+{% endblock %} {% block body %}
+<div>
+  {% comment %} pM 추가 {% endcomment %}
+  <form method="post">
+    {% csrf_token %}
+    <h1>Parent Model Create</h1>
+    <button type="submit">Add</button>
+    <input type="hidden" name="MDop" value="pM" />
+    <input type="hidden" name="CRUDop" value="Create" />
+  </form>
 
-{% block head %}
-  <title>index</title>
-  <link rel="stylesheet" href="{% static 'space1/index.css' %}">
-{% endblock %}
+  {% comment %} pM 보여주기 {% endcomment %}
+  <ul>
+    {% for i in pM %}
+    <form method="post">
+      {% csrf_token %}
+      <li>{{i.id}} <button type="submit">Delete</button></li>
+      <input type="hidden" name="MDop" value="pM" />
+      <input type="hidden" name="CRUDop" value="Delete" />
+      <input type="hidden" name="target" value="{{i.id}}" />
+    </form>
+    {% endfor %}
+  </ul>
+</div>
 
-{% block body %}
-  <h1>hello</h1>
-  Hello world
+<br />
+<br />
+
+<div>
+  {% comment %} cM 추가 {% endcomment %}
+  <form method="post">
+    {% csrf_token %}
+    <h1>Child Model Create</h1>
+    <ul>
+      <li><input type="text" placeholder="Integer" name="Integer" /></li>
+      <li><input type="text" placeholder="Small text" name="small_text" /></li>
+      <li><input type="text" placeholder="Large text" name="large_text" /></li>
+      <li><input type="date" placeholder="Date" name="date" /></li>
+      <li>
+        <select name="foreign">
+          {% for i in pM %}
+          <option value="{{i.id}}">{{i.id}}</option>
+          {% endfor %}
+        </select>
+      </li>
+      <li>
+        <select name="repair_state">
+          <option value="B">수리 전</option>
+          <option value="A">수리 후</option>
+        </select>
+      </li>
+    </ul>
+
+    <button type="submit">Add</button>
+    <input type="hidden" name="MDop" value="cM" />
+    <input type="hidden" name="CRUDop" value="Create" />
+  </form>
+
+  {% comment %} cM 보여주기 {% endcomment %}
+  <ul>
+    {% for i in cM %}
+    <li>
+      <form method="post">
+        {% csrf_token %} 
+        {{i.small_text}}
+        <button type="submit">Delete</button>
+        <button type="button" onclick="openModal({{i.id}})">Update</button>
+        <input type="hidden" name="MDop" value="cM" />
+        <input type="hidden" name="CRUDop" value="Delete" />
+        <input type="hidden" name="target" value="{{i.id}}" />
+      </form>
+    </li>
+
+    {% comment %} modal 창 {% endcomment %}
+    <div class="modal" id="{{i.id}}-editModal">
+      <div class="modal-content">
+        <h1>Edit</h1>
+        <form method="post">
+          {% csrf_token %}
+          <ul>
+            <li>
+              <input
+                type="text"
+                placeholder="Integer"
+                name="Integer"
+                value="{{i.integer}}"
+              />
+            </li>
+            <li>
+              <input
+                type="text"
+                placeholder="Small text"
+                name="small_text"
+                value="{{i.small_text}}"
+              />
+            </li>
+            <li>
+              <input
+                type="text"
+                placeholder="Large text"
+                name="large_text"
+                value="{{i.large_text}}"
+              />
+            </li>
+            <li>
+              <input type="date" name="date" value="{{i.date|date:'Y-m-d'}}" />
+            </li>
+            <li>
+              <select name="foreign">
+                {% for ii in pM %} 
+                  {% if i.foreign.id == ii.id %}
+                    <option value="{{ii.id}}" selected>{{ii.id}}</option>
+                  {% else %}
+                    <option value="{{ii.id}}">{{ii.id}}</option>
+                  {% endif %} 
+                {% endfor %}
+              </select>
+            </li>
+            <li>
+              
+              <select name="repair_state">
+                {% if i.repair_state == 'B' %}
+                  <option value="{{i.repair_state}}" selected>수리 전</option>
+                  <option value="B">수리 후</option>
+                {% else %}
+                  <option value="A">수리 전</option>
+                  <option value="{{i.repair_state}}" selected>수리 후</option>
+                {% endif %}
+              </select>
+            </li>
+          </ul>
+          <button type="submit" onclick="closeModal({{i.id}})">Edit</button>
+          <button type="button" onclick="closeModal({{i.id}})">Cancel</button>
+          <input type="hidden" name="MDop" value="cM" />
+          <input type="hidden" name="CRUDop" value="Update" />
+          <input type="hidden" name="target" value="{{i.id}}" />
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </ul>
+</div>
+
+<script src="{% static 'space1/index.js' %}"></script>
 {% endblock %}
